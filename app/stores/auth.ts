@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { User, LoginCredentials, AuthResponse } from '@/types'
+import type { User, LoginCredentials, AuthResponse } from '~/types'
 
 interface AuthState {
   user: User | null
@@ -27,15 +27,13 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     /**
-     * Login qilish
+     * Login qilish (Server-side only)
      */
     async login(credentials: LoginCredentials): Promise<void> {
       this.loading = true
       try {
-        const { data } = await useFetch<AuthResponse>('/api/auth/login', {
-          method: 'POST',
-          body: credentials
-        })
+        // Server-side request - browser networkda ko'rinmaydi
+        const { data } = await useServerApiPost<AuthResponse>('/api/auth/login', credentials)
 
         if (data.value) {
           this.setAuth(data.value)
@@ -49,12 +47,12 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Logout qilish
+     * Logout qilish (Server-side only)
      */
     async logout(): Promise<void> {
       try {
-        await useFetch('/api/auth/logout', {
-          method: 'POST',
+        // Server-side request
+        await useServerApiPost('/api/auth/logout', {}, {
           headers: {
             Authorization: `Bearer ${this.accessToken}`
           }
@@ -68,7 +66,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Token yangilash
+     * Token yangilash (Server-side only)
      */
     async refreshAccessToken(): Promise<boolean> {
       if (!this.refreshToken) {
@@ -76,11 +74,9 @@ export const useAuthStore = defineStore('auth', {
       }
 
       try {
-        const { data } = await useFetch<AuthResponse>('/api/auth/refresh', {
-          method: 'POST',
-          body: {
-            refreshToken: this.refreshToken
-          }
+        // Server-side request - browser networkda ko'rinmaydi
+        const { data } = await useServerApiPost<AuthResponse>('/api/auth/refresh', {
+          refreshToken: this.refreshToken
         })
 
         if (data.value) {
@@ -165,13 +161,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Foydalanuvchi ma'lumotlarini yangilash
+     * Foydalanuvchi ma'lumotlarini yangilash (Server-side only)
      */
     async fetchUser(): Promise<void> {
       if (!this.accessToken) return
 
       try {
-        const { data } = await useFetch<{ user: User }>('/api/auth/session', {
+        // Server-side request
+        const { data } = await useServerApiGet<{ user: User }>('/api/auth/session', {
           headers: {
             Authorization: `Bearer ${this.accessToken}`
           }

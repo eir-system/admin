@@ -1,23 +1,10 @@
 import type { UseFetchOptions } from 'nuxt/app'
 
 /**
- * ESLATMA: SSR (Server-Side Rendering) yoqilgan!
- * 
- * Barcha backend requestlar server-side'da bajarilishi uchun 
- * useServerApi.ts dan foydalaning.
- * 
- * Bu fayl (useApi.ts) faqat client-side specific requestlar uchun.
- * 
- * @see useServerApi.ts - Server-side API client (tavsiya etiladi)
+ * Server-side API client
+ * Barcha requestlar server-side'da bajariladi va browser networkda ko'rinmaydi
  */
-
-/**
- * Custom fetch wrapper - barcha requestlarga avtomatik Bearer token qo'shadi
- * 
- * ⚠️ DIQQAT: Bu client-side'da ishlaydi va browser networkda ko'rinadi
- * ✅ SSR uchun useServerApi.ts dan foydalaning
- */
-export const useApi = <T>(
+export const useServerApi = <T>(
   url: string,
   options: UseFetchOptions<T> = {}
 ) => {
@@ -35,21 +22,33 @@ export const useApi = <T>(
     defaultHeaders.Authorization = `Bearer ${authStore.accessToken}`
   }
 
-  // Merge qilingan optionslar
+  // Server-side only options
   const mergedOptions: UseFetchOptions<T> = {
     ...options,
+    
+    // MUHIM: server=true - faqat server-side'da ishlaydi
+    server: true,
+    
+    // MUHIM: lazy=false - SSR vaqtida to'liq yuklanadi
+    lazy: false,
+    
     baseURL: config.public.apiBase,
     headers: {
       ...defaultHeaders,
       ...options.headers
     },
     
+    // Credentials bilan ishlash (cookies uchun)
+    credentials: 'include',
+    
     // Error handling
     onResponseError({ response }) {
       // 401 - Unauthorized
       if (response.status === 401) {
         authStore.clearAuth()
-        navigateTo('/login')
+        if (process.client) {
+          navigateTo('/login')
+        }
       }
       
       // 403 - Forbidden
@@ -68,24 +67,24 @@ export const useApi = <T>(
 }
 
 /**
- * GET request
+ * GET request (server-only)
  */
-export const useApiGet = <T>(url: string, options: UseFetchOptions<T> = {}) => {
-  return useApi<T>(url, {
+export const useServerApiGet = <T>(url: string, options: UseFetchOptions<T> = {}) => {
+  return useServerApi<T>(url, {
     ...options,
     method: 'GET'
   })
 }
 
 /**
- * POST request
+ * POST request (server-only)
  */
-export const useApiPost = <T>(
+export const useServerApiPost = <T>(
   url: string,
   body?: any,
   options: UseFetchOptions<T> = {}
 ) => {
-  return useApi<T>(url, {
+  return useServerApi<T>(url, {
     ...options,
     method: 'POST',
     body
@@ -93,14 +92,14 @@ export const useApiPost = <T>(
 }
 
 /**
- * PUT request
+ * PUT request (server-only)
  */
-export const useApiPut = <T>(
+export const useServerApiPut = <T>(
   url: string,
   body?: any,
   options: UseFetchOptions<T> = {}
 ) => {
-  return useApi<T>(url, {
+  return useServerApi<T>(url, {
     ...options,
     method: 'PUT',
     body
@@ -108,24 +107,24 @@ export const useApiPut = <T>(
 }
 
 /**
- * DELETE request
+ * DELETE request (server-only)
  */
-export const useApiDelete = <T>(url: string, options: UseFetchOptions<T> = {}) => {
-  return useApi<T>(url, {
+export const useServerApiDelete = <T>(url: string, options: UseFetchOptions<T> = {}) => {
+  return useServerApi<T>(url, {
     ...options,
     method: 'DELETE'
   })
 }
 
 /**
- * PATCH request
+ * PATCH request (server-only)
  */
-export const useApiPatch = <T>(
+export const useServerApiPatch = <T>(
   url: string,
   body?: any,
   options: UseFetchOptions<T> = {}
 ) => {
-  return useApi<T>(url, {
+  return useServerApi<T>(url, {
     ...options,
     method: 'PATCH',
     body

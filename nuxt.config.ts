@@ -1,6 +1,15 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+
+  // SSR yoqilgan - barcha API requestlar server-side'da bajariladi
+  ssr: true,
+
+  // Nitro server configuration
+  nitro: {
+    compressPublicAssets: true,
+  },
 
   modules: [
     '@nuxt/eslint',
@@ -17,15 +26,19 @@ export default defineNuxtConfig({
     '@nuxtjs/turnstile'
   ],
 
+  // Runtime config
   runtimeConfig: {
+    // Server-side only keys
     jwtAccessSecret: process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-change-in-production',
     jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production',
     
+    // Public keys (client-side)
     public: {
       apiBase: process.env.API_BASE_URL || '/api'
     }
   },
 
+  // Authentication configuration
   auth: {
     baseURL: process.env.AUTH_ORIGIN || 'http://localhost:3000/api/auth',
     provider: {
@@ -40,7 +53,7 @@ export default defineNuxtConfig({
         signInResponseTokenPointer: '/accessToken',
         type: 'Bearer',
         headerName: 'Authorization',
-        maxAgeInSeconds: 60 * 15,
+        maxAgeInSeconds: 60 * 15, // 15 minutes
         sameSiteAttribute: 'lax'
       },
       refresh: {
@@ -50,7 +63,7 @@ export default defineNuxtConfig({
         token: {
           signInResponseRefreshTokenPointer: '/refreshToken',
           refreshRequestTokenPointer: '/refreshToken',
-          maxAgeInSeconds: 60 * 60 * 24 * 7
+          maxAgeInSeconds: 60 * 60 * 24 * 7 // 7 days
         }
       }
     },
@@ -59,20 +72,23 @@ export default defineNuxtConfig({
     },
     session: {
       enableRefreshOnWindowFocus: true,
-      enableRefreshPeriodically: 5000
+      enableRefreshPeriodically: 5000 // Refresh every 5 seconds if needed
     }
   },
 
+  // Pinia store configuration
   pinia: {
     storesDirs: ['./app/stores/**']
   },
 
+  // Color mode configuration
   colorMode: {
     preference: 'system',
     fallback: 'light',
     classSuffix: ''
   },
 
+  // i18n configuration
   i18n: {
     locales: [
       { code: 'uz', iso: 'uz-UZ', file: 'uz.json' },
@@ -84,13 +100,16 @@ export default defineNuxtConfig({
     langDir: 'locales'
   },
 
+  // CSS configuration
   css: ['~/assets/css/main.css'],
 
+  // Robots configuration
   robots: {
     allow: ['/'],
     disallow: ['/admin', '/api']
   },
 
+  // Sitemap configuration
   sitemap: {
     hostname: process.env.SITE_URL || 'http://localhost:3000',
     gzip: true
