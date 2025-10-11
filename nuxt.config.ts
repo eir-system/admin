@@ -7,6 +7,13 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/test-utils',
-    '@nuxt/ui'
+    '@nuxt/ui',
+    '@nuxtjs/i18n',
+    '@vueuse/nuxt',
+    '@nuxtjs/color-mode',
+    '@nuxtjs/sitemap',
+    '@nuxtjs/robots',
+    '@sidebase/nuxt-auth',
+    '@nuxtjs/turnstile'
   ]
 })
