@@ -25,12 +25,12 @@ const { schema, state, onSubmit, isLoading, errorMessage, currentYear } =
           :schema="schema"
           :state="state"
           class="space-y-6"
-          @submit="onSubmit"
+          @submit.prevent="onSubmit"
         >
           <!-- Error Message -->
           <UAlert
             v-if="errorMessage"
-            color="red"
+            color="error"
             variant="soft"
             :title="errorMessage"
             :close-button="{

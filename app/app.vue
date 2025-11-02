@@ -1,5 +1,14 @@
+<script setup lang="ts">
+import type { ToasterProps } from "@nuxt/ui";
+
+const toasterConfig: ToasterProps = {
+  position: "top-right",
+};
+</script>
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <UApp :toaster="toasterConfig">
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </UApp>
 </template>
