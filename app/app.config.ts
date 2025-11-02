@@ -1,5 +1,5 @@
 export default defineAppConfig({
-  title: "EIR ADMIN",
+  title: 'EIR ADMIN',
   theme: {
     dark: true,
     colors: {

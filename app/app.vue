@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ToasterProps } from "@nuxt/ui";
+  import type { ToasterProps } from '@nuxt/ui'
 
-const toasterConfig: ToasterProps = {
-  position: "top-right",
-};
+  const toasterConfig: ToasterProps = {
+    position: 'top-right',
+  }
 </script>
 <template>
   <UApp :toaster="toasterConfig">

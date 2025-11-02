@@ -1,4 +1,4 @@
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   runtimeConfig: {
@@ -11,14 +11,12 @@ export default defineNuxtConfig({
   modules: ['@nuxt/image', '@nuxt/ui', '@nuxt/eslint'],
 
   ui: {
-    colorMode: false
+    colorMode: false,
   },
 
   css: ['./app/assets/css/main.css'],
 
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
   },
 })

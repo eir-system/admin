@@ -1,33 +1,33 @@
 <script setup lang="ts">
-const vModel = defineModel<string>();
-const show = ref(false);
+  const vModel = defineModel<string>()
+  const show = ref(false)
 
-withDefaults(
-  defineProps<{
-    size?: "xs" | "sm" | "md" | "lg" | "xl";
-    iconSize?: "xs" | "sm" | "md" | "lg" | "xl";
-    loading?: boolean;
-    disabled?: boolean;
-    placeholder?: string;
-    color?: string;
-    variant?: "outline" | "none";
-    ui?: Record<string, unknown>;
-  }>(),
-  {
-    size: "md",
-    iconSize: "sm",
-    loading: false,
-    disabled: false,
-    placeholder: "Parolingizni kiriting",
-    color: "primary",
-    variant: "outline",
-    ui: () => ({ trailing: 'pe-0' }),
+  withDefaults(
+    defineProps<{
+      size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+      iconSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+      loading?: boolean
+      disabled?: boolean
+      placeholder?: string
+      color?: string
+      variant?: 'outline' | 'none'
+      ui?: Record<string, unknown>
+    }>(),
+    {
+      size: 'md',
+      iconSize: 'sm',
+      loading: false,
+      disabled: false,
+      placeholder: 'Parolingizni kiriting',
+      color: 'primary',
+      variant: 'outline',
+      ui: () => ({ trailing: 'pe-0' }),
+    }
+  )
+
+  const togglePassword = () => {
+    show.value = !show.value
   }
-);
-
-const togglePassword = () => {
-  show.value = !show.value;
-};
 </script>
 
 <template>

@@ -1,32 +1,24 @@
 <script setup lang="ts">
-import BaseInput from "@/components/UI/BaseInput.vue";
-import BaseBtn from "@/components/UI/BaseBtn.vue";
-import PasswordInput from "@/components/UI/PasswordInput.vue";
+  import BaseInput from '@/components/UI/BaseInput.vue'
+  import BaseBtn from '@/components/UI/BaseBtn.vue'
+  import PasswordInput from '@/components/UI/PasswordInput.vue'
 
-definePageMeta({
-  layout: "auth",
-});
+  definePageMeta({
+    layout: 'auth',
+  })
 
-const { schema, state, onSubmit, isLoading, errorMessage, currentYear } =
-  useLogin();
+  const { schema, state, onSubmit, isLoading, errorMessage, currentYear } = useLogin()
 </script>
 
 <template>
-  <div
-    class="min-h-screen flex flex-col items-center justify-center px-4"
-  >
+  <div class="min-h-screen flex flex-col items-center justify-center px-4">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-gray-900 mb-2">EIR SYSTEM</h1>
       </div>
 
       <div class="rounded-2xl shadow-xl p-4">
-        <UForm
-          :schema="schema"
-          :state="state"
-          class="space-y-6"
-          @submit.prevent="onSubmit"
-        >
+        <UForm :schema="schema" :state="state" class="space-y-6" @submit.prevent="onSubmit">
           <!-- Error Message -->
           <UAlert
             v-if="errorMessage"
@@ -61,13 +53,7 @@ const { schema, state, onSubmit, isLoading, errorMessage, currentYear } =
           </UFormField>
 
           <!-- Submit Btn -->
-          <BaseBtn
-            type="submit"
-            size="lg"
-            :block="true"
-            :loading="isLoading"
-            :disabled="isLoading"
-          >
+          <BaseBtn type="submit" size="lg" :block="true" :loading="isLoading" :disabled="isLoading">
             Kirish
           </BaseBtn>
         </UForm>

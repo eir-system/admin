@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import type { NuxtError } from '#app'
+  import type { NuxtError } from '#app'
 
-const props = defineProps({
-  error: Object as () => NuxtError,
-})
+  defineProps({
+    error: {
+      type: Object as () => NuxtError,
+      default: () => ({ statusCode: 500, message: 'Internal Server Error' }),
+    },
+  })
 </script>
 
 <template>
