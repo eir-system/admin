@@ -3,19 +3,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "-----DEFAULT-----": "exit 0",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "-----PRETTIER-----": "exit 0",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier --write .",
-    "-----ESLINT-----": "exit 0",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prepare": "husky"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@nuxt/image": "^1.11.0",
@@ -28,21 +20,6 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@iconify-json/lucide": "^1.2.71",
-    "@nuxt/eslint": "^1.10.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
-    "prettier": "3.6.2"
-  },
-  "lint-staged": {
-    "*.{js,ts,vue}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
+    "@iconify-json/lucide": "^1.2.71"
   }
 }
