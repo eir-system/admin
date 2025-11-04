@@ -7,6 +7,8 @@
 </script>
 <template>
   <UApp :toaster="toasterConfig">
+    <NuxtLoadingIndicator />
+
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

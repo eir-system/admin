@@ -1,17 +1,22 @@
 <script setup lang="ts">
-  import type { NuxtError } from '#app'
-
   defineProps({
     error: {
-      type: Object as () => NuxtError,
-      default: () => ({ statusCode: 500, message: 'Internal Server Error' }),
+      type: Object,
+      required: true,
     },
   })
+
+  const handleError = () => clearError({ redirect: '/' })
 </script>
 
 <template>
-  <div>
-    <h1>{{ error.statusCode }}</h1>
-    <NuxtLink to="/">Go back home</NuxtLink>
+  <div class="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-8">
+    <h1 class="text-4xl font-bold text-red-500 mb-4">
+      {{ error.statusCode === 404 ? '404 — Sahifa topilmadi' : 'Xatolik yuz berdi' }}
+    </h1>
+    <p class="text-gray-600 mb-6">
+      {{ error.message || 'Iltimos, keyinroq urinib ko‘ring.' }}
+    </p>
+    <UButton color="primary" @click="handleError"> Bosh sahifaga qaytish </UButton>
   </div>
 </template>
