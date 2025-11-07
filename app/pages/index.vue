@@ -62,9 +62,14 @@ function onPageChange(newPagination: { pageIndex: number; pageSize: number; tota
   }, 1000)
   console.log('New senders:', senders.value)
 }
+
+function onCreate(data: boolean) {
+  console.log('Create', data)
+}
 </script>
 
 <template>
   <BaseTable :data="senders" :columns="columns" :search-keys="['name', 'email']" :pagination="pagination"
-    :loading="tableLoading" show-search show-actions @edit="onEdit" @delete="onDelete" @page-change="onPageChange" />
+    :loading="tableLoading" show-search show-create show-actions @edit="onEdit" @delete="onDelete"
+    @page-change="onPageChange" @create="onCreate" />
 </template>

@@ -3,6 +3,7 @@ import type { TableColumn } from '@nuxt/ui'
 import type { Row } from '@tanstack/vue-table'
 
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import BaseBtn from './UI/BaseBtn.vue'
 
 
 const UButton = resolveComponent('UButton')
@@ -14,6 +15,7 @@ const props = withDefaults(
     columns: TableColumn<any>[]
     searchKeys?: string[]
     showSearch?: boolean
+    showCreate?: boolean
     showActions?: boolean
     loading?: boolean
     pagination?: {
@@ -26,6 +28,7 @@ const props = withDefaults(
     data: () => [],
     searchKeys: () => [],
     showSearch: false,
+    showCreate: false,
     showActions: false,
     loading: false,
     pagination: () => ({ pageIndex: 0, pageSize: 10, total: 0 }),
@@ -36,6 +39,7 @@ const emit = defineEmits<{
   (e: 'edit', row: any): void
   (e: 'delete', row: any): void
   (e: 'page-change', pagination: { pageIndex: number; pageSize: number; total: number }): void
+  (e: 'create', row: boolean): void
 }>()
 
 const activeBreakpoint = useBreakpoints(breakpointsTailwind).active()
@@ -59,6 +63,10 @@ function updatePage(page: number) {
 function updatePageSize(size: number) {
   pagination.pageSize = size
   emit('page-change', { ...pagination })
+}
+
+function createBtn() {
+  emit('create', true)
 }
 
 // search
@@ -118,9 +126,10 @@ const showPaginationEdges = computed(() => {
 
 <template>
   <div class="flex flex-col flex-1 w-full">
-    <div v-if="showSearch && searchKeys?.length"
-      class="sticky top-0 flex px-4 py-3.5 border-b border-accented bg-white/50 backdrop-blur-sm z-10">
-      <UInput class="max-w-sm" placeholder="Search..." v-model="searchValue" />
+    <div v-if="showSearch || showCreate"
+      class="sticky top-0 flex items-center justify-between px-4 py-3.5 border-b border-accented bg-white/50 backdrop-blur-sm z-10">
+      <UInput v-if="searchKeys?.length" class="max-w-sm" placeholder="Search..." v-model="searchValue" />
+      <BaseBtn v-if="showCreate" icon="i-lucide-plus" @click="createBtn">Create</BaseBtn>
     </div>
 
     <UTable ref="table" :column-filters="columnFilters" :data="[...data]" :columns="finalColumns" :loading="loading"
