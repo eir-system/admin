@@ -127,8 +127,8 @@ const showPaginationEdges = computed(() => {
 <template>
   <div class="flex flex-col flex-1 w-full">
     <div v-if="showSearch || showCreate"
-      class="sticky top-0 flex items-center justify-between px-4 py-3.5 border-b border-accented bg-white/50 backdrop-blur-sm z-10">
-      <UInput v-if="searchKeys?.length" class="max-w-sm" placeholder="Search..." v-model="searchValue" />
+      class="sticky top-0 flex items-center justify-between px-0 py-2 md:px-4 md:py-4 border-b border-accented bg-white/50 backdrop-blur-sm z-10">
+      <UInput v-if="searchKeys?.length" class="max-w-sm mr-2 md:w-md" placeholder="Search..." v-model="searchValue" />
       <BaseBtn v-if="showCreate" icon="i-lucide-plus" @click="createBtn">Create</BaseBtn>
     </div>
 
