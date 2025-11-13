@@ -2,6 +2,13 @@
 import BaseTable from '@/components/BaseTable.vue'
 import type { TableColumn } from '@nuxt/ui'
 
+const api = useApi();
+
+onMounted(async () => {
+  const response = await api.get('/users/me');
+  console.log(response);
+})
+
 type User = { id: string; name: string; email: string; role: string }
 
 const users = reactive<User[]>([

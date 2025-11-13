@@ -2,7 +2,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   runtimeConfig: {
-    baseUrl: '123',
+    public: {
+      baseUrl: 'http://localhost:3000',
+    },
   },
 
   compatibilityDate: '2025-07-15',

@@ -33,11 +33,11 @@
             class="mb-4"
           />
 
-          <!-- email -->
-          <UFormField label="Email" name="email" required>
+          <!-- username -->
+          <UFormField label="Username" name="username" required>
             <BaseInput
-              v-model="state.email"
-              placeholder="example@email.com"
+              v-model="state.username"
+              placeholder="Username kiriting"
               :disabled="isLoading"
             />
           </UFormField>

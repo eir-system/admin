@@ -1,52 +1,61 @@
-import { z } from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import { z } from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
 
 export const useLogin = () => {
-  const toast = useToast()
+  const toast = useToast();
+  const api = useApi();
   const schema = z.object({
-    email: z.string('Email majburiy').email("Email manzil noto'g'ri formatda"),
+    username: z.string("Username majburiy").min(6, "Username kamida 6 ta belgidan iborat bo'lishi kerak").max(100, "Username juda uzun"),
     password: z
-      .string('Parol majburiy')
+      .string("Parol majburiy")
       .min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak")
-      .max(100, 'Parol juda uzun'),
-  })
+      .max(100, "Parol juda uzun"),
+  });
 
-  type Schema = z.output<typeof schema>
+  type Schema = z.output<typeof schema>;
 
   const state = reactive<Partial<Schema>>({
-    email: undefined,
+    username: undefined,
     password: undefined,
-  })
+  });
 
-  const isLoading = ref(false)
-  const errorMessage = ref<string | null>(null)
+  const isLoading = ref(false);
+  const errorMessage = ref<string | null>(null);
 
   async function onSubmit(event: FormSubmitEvent<Schema>) {
     try {
-      isLoading.value = true
-      errorMessage.value = null
+      isLoading.value = true;
+      errorMessage.value = null;
 
-      schema.parse(event.data)
+      const validatedData = schema.parse(event.data);
 
-      // TODO: Replace with actual API call
-      // Example:
-      // const { data, error } = await $fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   body: validatedData
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Mock success - redirect to dashboard
-      // navigateTo('/dashboard');
-
-      // Mock error for demonstration
-      // throw new Error("Email yoki parol noto'g'ri");
-
-      // Success notification
-      await navigateTo('/')
-      toast.add({ title: 'Muvaffaqiyatli!', description: 'Tizimga kirildi', color: 'success' })
+      const response = await api.post(
+        "/auth/sign-in",
+        {
+          username: validatedData.username,
+          password: validatedData.password,
+        },
+        { useToken: false }
+      );
+      if (response.success) {
+        const atCookie = useCookie('at', {
+          secure: true,
+          sameSite: 'strict',
+          maxAge: 60 * 15, // 15 minutes
+        });
+        const rtCookie = useCookie('rt', {
+          secure: true,
+          sameSite: 'strict',
+          maxAge: 60 * 60, // 1 hour
+        });
+        atCookie.value = response.data.token.access_token;
+        rtCookie.value = response.data.token.refresh_token;
+        await navigateTo("/");
+        toast.add({
+          title: response.message,
+          color: "success",
+        });
+      }
     } catch (error) {
       // Handle validation errors
       // if (error instanceof z.ZodError) {
@@ -56,30 +65,34 @@ export const useLogin = () => {
 
       // Handle API errors
       if (error instanceof Error) {
-        errorMessage.value = error.message
+        errorMessage.value = error.message;
       } else {
-        errorMessage.value = 'Kutilmagan xatolik yuz berdi'
+        errorMessage.value = "Kutilmagan xatolik yuz berdi";
       }
 
       // Error notification
-      toast.add({ title: 'Xatolik', description: errorMessage.value, color: 'error' })
+      toast.add({
+        title: "Xatolik",
+        description: errorMessage.value,
+        color: "error",
+      });
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
   // Clear error when user starts typing
   watch(
-    () => [state.email, state.password],
+    () => [state.username, state.password],
     () => {
       if (errorMessage.value) {
-        errorMessage.value = null
+        errorMessage.value = null;
       }
     }
-  )
+  );
 
-  const currentDate = new Date()
-  const currentYear = currentDate.getFullYear()
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
 
   return {
     schema,
@@ -88,5 +101,5 @@ export const useLogin = () => {
     isLoading: readonly(isLoading),
     errorMessage: readonly(errorMessage),
     currentYear,
-  }
-}
+  };
+};
