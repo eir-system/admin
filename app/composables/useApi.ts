@@ -112,6 +112,7 @@ export const useApi = () => {
           // Clear tokens on refresh failure
           useCookie("at").value = null;
           useCookie("rt").value = null;
+          useCookie("user").value = null;
 
           // Redirect to login or throw error
           navigateTo("/auth/login");

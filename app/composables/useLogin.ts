@@ -43,13 +43,22 @@ export const useLogin = () => {
           sameSite: 'strict',
           maxAge: 60 * 15, // 15 minutes
         });
+        atCookie.value = response.data.token.access_token;
+        
         const rtCookie = useCookie('rt', {
           secure: true,
           sameSite: 'strict',
           maxAge: 60 * 60, // 1 hour
         });
-        atCookie.value = response.data.token.access_token;
         rtCookie.value = response.data.token.refresh_token;
+
+        const userCookie = useCookie('user', {
+          secure: true,
+          sameSite: 'strict',
+          maxAge: 60 * 60 * 24 * 30, // 30 days
+        });
+        userCookie.value = response.data.user;
+
         await navigateTo("/");
         toast.add({
           title: response.message,
@@ -57,13 +66,6 @@ export const useLogin = () => {
         });
       }
     } catch (error) {
-      // Handle validation errors
-      // if (error instanceof z.ZodError) {
-      //   errorMessage.value = error?.errors[0]?.message || "Validatsiya xatosi";
-      //   return;
-      // }
-
-      // Handle API errors
       if (error instanceof Error) {
         errorMessage.value = error.message;
       } else {
