@@ -1,82 +1,91 @@
 <script setup lang="ts">
-import BaseTable from '@/components/BaseTable.vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { CompanyListResponse, Company } from "#shared/types/company";
 
 const api = useApi();
 
-onMounted(async () => {
-  const response = await api.get('/users/me');
-  console.log(response);
-})
-
-type User = { id: string; name: string; email: string; role: string }
-
-const users = reactive<User[]>([
-  { id: '1', name: 'Alice', email: 'alice@mail.com', role: 'admin' },
-  { id: '2', name: 'Bob', email: 'bob@mail.com', role: 'user' },
-  { id: '3', name: 'Charlie', email: 'charlie@mail.com', role: 'user' },
-  { id: '4', name: 'Diana', email: 'diana@mail.com', role: 'moderator' },
-  { id: '5', name: 'Eve', email: 'eve@mail.com', role: 'user' },
-  { id: '6', name: 'Frank', email: 'frank@mail.com', role: 'admin' },
-  ...Array.from({ length: 200 }, (_, i) => ({
-    id: String(i + 7),
-    name: `User ${i + 7}`,
-    email: `user${i + 7}@mail.com`,
-    role: i % 2 ? 'user' : 'admin',
-  })),
-])
-
-const senders = ref<User[]>([])
-senders.value.push(...users.slice(0, 10))
-
-const columns: TableColumn<User>[] = [
-  { accessorKey: 'id', header: 'ID' },
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'email', header: 'Email' },
-  { accessorKey: 'role', header: 'Role' },
-]
+const companies = ref<Company[]>([]);
+const loading = ref(false);
 
 const pagination = reactive({
   pageIndex: 0,
   pageSize: 10,
-  total: users.length,
-})
+  total: 0
+});
 
-const tableLoading = ref(false)
+const search = ref("");
 
-function onEdit(row: User) {
-  console.log('Edit:', row)
+/* --------------------------
+        LOAD DATA
+--------------------------- */
+async function loadData() {
+  loading.value = true;
+
+  const res = await api.get<CompanyListResponse>("/companies", {
+    params: {
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      search: search.value
+    }
+  });
+
+  companies.value = res.data?.items || [];
+  pagination.total = res.data?.total || 0;
+
+  loading.value = false;
 }
 
-function onDelete(row: User) {
-  console.log('Delete:', row)
+/* --------------------------
+        EVENTS
+--------------------------- */
+function onPageChange(p: { pageIndex: number; pageSize: number }) {
+  pagination.pageIndex = p.pageIndex;
+  pagination.pageSize = p.pageSize;
+  loadData();
 }
 
-function onPageChange(newPagination: { pageIndex: number; pageSize: number; total: number }) {
-  console.log('Page Change:', newPagination)
-  tableLoading.value = true
-  pagination.pageIndex = newPagination.pageIndex
-  pagination.pageSize = newPagination.pageSize
-  pagination.total = users.length
-
-  senders.value = users.slice(
-    pagination.pageIndex * pagination.pageSize,
-    (pagination.pageIndex + 1) * pagination.pageSize
-  )
-
-  setTimeout(() => {
-    tableLoading.value = false
-  }, 1000)
-  console.log('New senders:', senders.value)
+function onSearch(value: string) {
+  search.value = value;
+  pagination.pageIndex = 0;
+  loadData();
 }
 
-function onCreate(data: boolean) {
-  console.log('Create', data)
+function onCreate() {
+  console.log("Create clicked");
 }
+
+function onEdit(row: any) {
+  console.log("Edit", row);
+}
+
+function onDelete(row: any) {
+  console.log("Delete", row);
+}
+
+/* --------------------------
+        INITIAL LOAD
+--------------------------- */
+onMounted(loadData);
 </script>
 
 <template>
-  <BaseTable :data="senders" :columns="columns" :search-keys="['name', 'email']" :pagination="pagination"
-    :loading="tableLoading" show-search show-create show-actions @edit="onEdit" @delete="onDelete"
-    @page-change="onPageChange" @create="onCreate" />
+  <BaseTable
+    :data="companies"
+    :columns="[
+      { accessorKey: 'id', header: 'ID' },
+      { accessorKey: 'name', header: 'Name' },
+      { accessorKey: 'is_active', header: 'Active' },
+      { accessorKey: 'created_at', header: 'Created At' }
+    ]"
+    :pagination="pagination"
+    :loading="loading"
+    :search-keys="['name']"
+    show-search
+    show-actions
+    show-create
+    @edit="onEdit"
+    @delete="onDelete"
+    @create="onCreate"
+    @page-change="onPageChange"
+    @search="onSearch"
+  />
 </template>

@@ -3,9 +3,11 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      baseUrl: 'http://localhost:3000',
+      baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
+      accessTtl: process.env.NUXT_ACCESS_TTL,
+      refreshTtl: process.env.NUXT_REFRESH_TTL
     },
-  },
+  },  
 
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },

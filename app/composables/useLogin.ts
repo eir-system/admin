@@ -1,11 +1,16 @@
 import { z } from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import {parseTtl} from "#shared/utils/parseTtl"
 
 export const useLogin = () => {
+  const config = useRuntimeConfig()
   const toast = useToast();
   const api = useApi();
   const schema = z.object({
-    username: z.string("Username majburiy").min(6, "Username kamida 6 ta belgidan iborat bo'lishi kerak").max(100, "Username juda uzun"),
+    username: z
+      .string("Username majburiy")
+      .min(6, "Username kamida 6 ta belgidan iborat bo'lishi kerak")
+      .max(100, "Username juda uzun"),
     password: z
       .string("Parol majburiy")
       .min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak")
@@ -29,7 +34,7 @@ export const useLogin = () => {
 
       const validatedData = schema.parse(event.data);
 
-      const response = await api.post(
+      const response = await api.post<LoginBaseResponse>(
         "/auth/sign-in",
         {
           username: validatedData.username,
@@ -39,25 +44,22 @@ export const useLogin = () => {
       );
       if (response.success) {
         const atCookie = useCookie('at', {
-          secure: true,
-          sameSite: 'strict',
-          maxAge: 60 * 15, // 15 minutes
+          httpOnly: false,
+          sameSite: "strict",
+          secure: process.env.NODE_ENV === "production",
+          path: '/',
+          maxAge: parseTtl(config.public.accessTtl),
         });
-        atCookie.value = response.data.token.access_token;
+        atCookie.value = response.data?.access_token;
         
         const rtCookie = useCookie('rt', {
-          secure: true,
-          sameSite: 'strict',
-          maxAge: 60 * 60, // 1 hour
+          httpOnly: false,
+          sameSite: "strict",
+          secure: process.env.NODE_ENV === "production",
+          path: '/',
+          maxAge: parseTtl(config.public.refreshTtl),
         });
-        rtCookie.value = response.data.token.refresh_token;
-
-        const userCookie = useCookie('user', {
-          secure: true,
-          sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 30, // 30 days
-        });
-        userCookie.value = response.data.user;
+        rtCookie.value = response.data?.refresh_token;
 
         await navigateTo("/");
         toast.add({
@@ -72,7 +74,6 @@ export const useLogin = () => {
         errorMessage.value = "Kutilmagan xatolik yuz berdi";
       }
 
-      // Error notification
       toast.add({
         title: "Xatolik",
         description: errorMessage.value,
@@ -83,7 +84,6 @@ export const useLogin = () => {
     }
   }
 
-  // Clear error when user starts typing
   watch(
     () => [state.username, state.password],
     () => {
