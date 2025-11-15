@@ -1,26 +1,43 @@
 <script setup lang="ts">
-  import type { NavigationMenuItem } from '@nuxt/ui'
+import type { NavigationMenuItem } from "@nuxt/ui";
 
-  const open = ref(false)
-  const route = useRoute()
+const open = ref(false);
+const route = useRoute();
 
-  const activeLinkLabel = computed(() => {
-    const link = links.flat().find((item) => item.to === route.path)
-    return link?.label.toUpperCase()
-  })
+const isActive = (path: string) => {
+  return route.path === path || route.path.startsWith(path + "/");
+};
 
-  const links = [
-    [
-      {
-        label: 'Home',
-        icon: 'i-lucide-house',
-        to: '/',
-        onSelect: () => {
-          open.value = false
-        },
-      },
-    ],
-  ] satisfies NavigationMenuItem[][]
+const rawLinks = [
+  [
+    {
+      label: "Home",
+      icon: "i-lucide-house",
+      to: "/",
+      onSelect: () => (open.value = false),
+    },
+    {
+      label: "Companies",
+      icon: "i-lucide-building-2",
+      to: "/companies",
+      onSelect: () => (open.value = false),
+    },
+  ],
+] satisfies NavigationMenuItem[][];
+
+const links = computed(() =>
+  rawLinks.map((group) =>
+    group.map((item) => ({
+      ...item,
+      active: isActive(item.to),
+    }))
+  )
+);
+
+const activeLinkLabel = computed(() => {
+  const link = links.value.flat().find((item) => item.active);
+  return link?.label?.toUpperCase();
+});
 </script>
 
 <template>
@@ -33,13 +50,16 @@
       class="bg-elevated/25"
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >
+      <!-- SIDEBAR HEADER -->
       <template #header="{ collapsed }">
         <div class="px-4 py-3 w-full flex items-center justify-center">
           <NuxtLink to="/" class="text-2xl text-primary font-bold">
-            {{ collapsed ? 'ES' : 'EIR SYSTEM' }}
+            {{ collapsed ? "ES" : "EIR SYSTEM" }}
           </NuxtLink>
         </div>
       </template>
+
+      <!-- SIDEBAR MENU -->
       <template #default="{ collapsed }">
         <UNavigationMenu
           :collapsed="collapsed"
@@ -58,6 +78,8 @@
         />
       </template>
     </UDashboardSidebar>
+
+    <!-- MAIN PANEL -->
     <UDashboardPanel id="home">
       <template #header>
         <UDashboardNavbar :title="activeLinkLabel" :ui="{ right: 'gap-3' }">
